@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const fileUpload = require('express-fileupload');
 const config = require('./config/config'); 
 const sequelize = require('./db/connect');
 const router = require('./routes/routes');
@@ -8,6 +9,7 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.use(fileUpload());
 app.use(express.static(__dirname + '/public'));
 
 app.use('/', router);

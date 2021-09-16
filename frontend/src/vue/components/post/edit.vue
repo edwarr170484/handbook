@@ -9,12 +9,12 @@
             <form name="post-edit-form" @submit.prevent="savePost">
                 <b-form-group id="input-group-1">
                     <b-input-group class="mt-3" prepend="Заголовок статьи">
-                        <b-form-input name="post[title]" v-model="post.title"></b-form-input>
+                        <b-form-input name="post.title" v-model="post.title"></b-form-input>
                     </b-input-group>
                 </b-form-group>
                 <b-form-group id="input-group-2">
                     <b-input-group class="mt-3" prepend="Текст преамбулы">
-                        <b-form-textarea id="textarea-rows" rows="8" :value="post.postText" name="post[postText]" v-model="post.postText"></b-form-textarea>
+                        <b-form-textarea id="textarea-rows" rows="8" :value="post.postText" name="post.postText" v-model="post.postText"></b-form-textarea>
                     </b-input-group>
                 </b-form-group>
                 <component v-for="block in post.blocks" :key="block.id" v-bind:is="block.type" :block="block"></component>
@@ -30,10 +30,11 @@
                             <b-button @click="addPostBlock('paragraph')">p</b-button>
                             <b-button @click="addPostBlock('preformatted')">pre</b-button>
                             <b-button @click="addPostBlock('codeBlock')">code</b-button>
+                            <b-button @click="addPostBlock('imageBlock')">image</b-button>
                         </b-button-group>
                     </div>
                 </div>
-                <input name="post[id]" type="hidden" :value="post.id" />
+                <input name="post.id" type="hidden" :value="post.id" />
                 <b-button-group>
                     <b-button type="submit" variant="primary">Сохранить</b-button>
                     <b-button @click="$router.push({name: 'post', params:{postId: post.id}})">Отменить</b-button>
@@ -95,13 +96,17 @@
                 });
             },
             savePost: function(event){
-                let data={
-                    'id': this.post.id,
-                    'title': this.post.title,
-                    'postText': this.post.postText,
-                    'blocks': this.post.blocks
-                }
-                axios.post('/editor/post/edit/' + this.$route.params.postId, data).then((response) => {});
+                let data = new FormData(event.target);
+
+                axios({
+                    method: 'post',
+                    url: '/editor/post/edit/' + this.$route.params.postId,
+                    data: data,
+                    headers:{'Content-Type': 'multipart/form-data'},
+                    responseType: 'json'
+                }).then((response) => {
+                    this.$store.commit('getTopicsList');
+                });
             },
             addPostBlock: function(type){
                 let newBlock = {

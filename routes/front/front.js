@@ -7,7 +7,7 @@ router.get('/', (req, res) => {
     res.sendFile(__dirname + '/public');
 });
 
-router.get('/topics/list', topicController.getList);
+router.get('/topics/list', topicController.getTopicsList);
 
 router.get('/post/:postId', postController.getPost);
 

@@ -76,6 +76,7 @@
                 }).then((response) => {
                     this.isLoading = false;
                     this.isEdit = false;
+                    
                 });
             },
             deleteTopic: function(){

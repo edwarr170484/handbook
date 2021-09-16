@@ -78,6 +78,7 @@
           if(confirm('Do you want to delete this article?')){
             axios.post('/editor/post/remove', {'id': postId}).then((response) => {
               this.$router.push({path: '/'});
+              this.$store.commit('getTopicsList');
             });
           }
         }

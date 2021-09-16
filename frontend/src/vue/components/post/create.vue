@@ -6,15 +6,15 @@
             </header>
         </main>
         <div class="post-edit-form">
-            <form name="post-edit-form" @submit.prevent="savePost">
+            <form name="post-edit-form" @submit.prevent="savePost" enctype="multipart/form-data">
                 <b-form-group id="input-group-1">
                     <b-input-group class="mt-3" prepend="Заголовок статьи">
-                        <b-form-input name="post[title]" v-model="post.title"></b-form-input>
+                        <b-form-input name="post.title" v-model="post.title"></b-form-input>
                     </b-input-group>
                 </b-form-group>
                 <b-form-group id="input-group-2">
                     <b-input-group class="mt-3" prepend="Текст преамбулы">
-                        <b-form-textarea id="textarea-rows" rows="8" name="post[postText]" v-model="post.postText"></b-form-textarea>
+                        <b-form-textarea id="textarea-rows" rows="8" name="post.postText" v-model="post.postText"></b-form-textarea>
                     </b-input-group>
                 </b-form-group>
                 <component v-for="block in post.blocks" :key="block.id" v-bind:is="block.type" :block="block"></component>
@@ -30,10 +30,11 @@
                             <b-button @click="addPostBlock('paragraph')">p</b-button>
                             <b-button @click="addPostBlock('preformatted')">pre</b-button>
                             <b-button @click="addPostBlock('codeBlock')">code</b-button>
+                            <b-button @click="addPostBlock('imageBlock')">image</b-button>
                         </b-button-group>
                     </div>
                 </div>
-                <input name="post[topic_id]" type="hidden" v-model="post.topic_id" />
+                <input name="post.topic_id" type="hidden" v-model="post.topic_id" />
                 <b-button-group>
                     <b-button type="submit" variant="primary">Сохранить</b-button>
                     <b-button @click="$router.push({name: 'post', params:{postId: post.id}})">Отменить</b-button>
@@ -89,15 +90,17 @@
         },
         methods:{
             savePost: function(event){
-                let data={
-                    'title': this.post.title,
-                    'postText': this.post.postText,
-                    'topic_id': this.post.topic_id,
-                    'blocks': this.post.blocks
-                }
-                axios.post('/editor/post/create', data).then((response) => {
+                let data = new FormData(event.target);
+                axios({
+                    method: 'post',
+                    url: '/editor/post/create',
+                    data: data,
+                    headers:{'Content-Type': 'multipart/form-data'},
+                    responseType: 'json'
+                }).then((response) => {
                     if(response.data && response.data.id > 0){
                         this.$router.push({name: 'postEdit', params: {postId: response.data.id}});
+                        this.$store.commit('getTopicsList');
                     }
                 });
             },
@@ -107,6 +110,7 @@
                     type: type,
                     blockText: '',
                     sortorder: this.post.blocks.length + 1,
+                    isNew: true
                 }
 
                 this.post.blocks.push(newBlock);

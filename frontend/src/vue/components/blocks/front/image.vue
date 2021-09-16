@@ -1,5 +1,5 @@
 <template>
-    <img :src="block.blockText" alt="" title="" />
+    <img :src="'upload/' + block.blockText" alt="" title="" class="mw-100" />
 </template>
 
 <script>

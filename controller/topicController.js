@@ -1,4 +1,4 @@
-const {Topic, Post} = require('../db/models');
+const {Topic, Post, PostBlock} = require('../db/models');
 
 class TopicController{
     async create(req, res){
@@ -47,7 +47,7 @@ class TopicController{
         return res.json({'error' : 0});
     }
 
-    async getList(req, res){
+    async getTopicsList(req, res){
         const topics = await Topic.findAll({
             where:{
                 parent_id: null

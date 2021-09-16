@@ -1,7 +1,9 @@
 <template>
     <b-form-group id="input-group-header-2">
         <b-input-group class="mt-3" :prepend="block.type">
-            <b-form-input :name="'post[blocks][' + block.id + ']'" v-model="block.blockText"></b-form-input>
+            <b-form-input :name="'post.blocks'" v-model="block.blockText"></b-form-input>
+            <input name="post.types" v-model="block.type" type="hidden" />
+            <input name="block.id" :value="(block.id) ? block.id : 'isNew'" type="hidden" />
             <b-input-group-append>
                 <b-button variant="info" title="Удалить блок" @click="deleteBlock"><b-icon icon="trash"></b-icon></b-button>
             </b-input-group-append>

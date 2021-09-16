@@ -35,7 +35,6 @@
                 topic: {
                     title: ''
                 },
-                items: [],
                 isLoading: false
             }
         },
@@ -44,8 +43,13 @@
             'docs-nav' : docsNav,
             'main-content' : mainContent
         },
-        created: function(){
-            axios.get('/topics/list').then((response) => {this.items = response.data;});
+        created(){
+            this.$store.commit('getTopicsList');
+        },
+        computed: {
+            items: function(){
+                return this.$store.state.topics;
+            }  
         },
         methods:{
             addTopic: function(){

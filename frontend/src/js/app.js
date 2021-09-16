@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import VueRouter from 'vue-router'
+import axios from 'axios'
 import { BootstrapVue, BootstrapVueIcons } from 'bootstrap-vue'
 import '../scss/app.scss'
 import App from '../vue/App.vue'
@@ -21,7 +22,16 @@ const router = new VueRouter({
     ]
 });
 
-const store = new Vuex.Store({});
+const store = new Vuex.Store({
+    state:{
+        topics: []
+    },
+    mutations:{
+        getTopicsList(){
+            axios.get('/topics/list').then((response) => {this.state.topics = response.data;});
+        }
+    }
+});
 
 const app = new Vue({
     render: h => h(App),
