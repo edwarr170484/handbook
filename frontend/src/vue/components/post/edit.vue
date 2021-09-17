@@ -105,7 +105,11 @@
                     headers:{'Content-Type': 'multipart/form-data'},
                     responseType: 'json'
                 }).then((response) => {
-                    this.$store.commit('getTopicsList');
+                    if(response.data.error){
+                        alert(response.data.error)
+                    }else{
+                        this.$store.commit('getTopicsList');
+                    }
                 });
             },
             addPostBlock: function(type){

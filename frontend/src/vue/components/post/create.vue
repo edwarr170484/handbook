@@ -98,7 +98,9 @@
                     headers:{'Content-Type': 'multipart/form-data'},
                     responseType: 'json'
                 }).then((response) => {
-                    if(response.data && response.data.id > 0){
+                    if(response.data.error){
+                        alert(response.data.error);
+                    }else{
                         this.$router.push({name: 'postEdit', params: {postId: response.data.id}});
                         this.$store.commit('getTopicsList');
                     }

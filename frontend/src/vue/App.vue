@@ -64,8 +64,12 @@
                     responseType: 'json'
                 }).then((response) => {
                     this.isLoading = false;
-                    this.topic.title = null;
-                    this.items.push(response.data);
+                    if(response.data.error){
+                        alert(response.data.error);
+                    }else{
+                        this.topic.title = null;
+                        this.items.push(response.data.topic);
+                    }
                 });
             }
         }

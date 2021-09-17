@@ -66,19 +66,27 @@
         getPostData: function(){
           this.post = null;
           axios.get('/post/' + this.$route.params.postId).then((response) => {
-            this.post = response.data;
-            if(this.post.blocks.length > 0){
-                this.navigations = this.post.blocks.filter(function(block){
-                    return ['header1','header2','header3','header4','header5','header6'].includes(block.type);
-                });
+            if(response.data.error){
+              alert(response.data.error);
+            }else{
+              this.post = response.data.post;
+              if(this.post.blocks.length > 0){
+                  this.navigations = this.post.blocks.filter(function(block){
+                      return ['header1','header2','header3','header4','header5','header6'].includes(block.type);
+                  });
+              }
             }
           });
         },
         deletePost: function(postId){
           if(confirm('Do you want to delete this article?')){
             axios.post('/editor/post/remove', {'id': postId}).then((response) => {
-              this.$router.push({path: '/'});
-              this.$store.commit('getTopicsList');
+              if(response.data.error){
+                alert(response.data.error);
+              }else{
+                this.$router.push({path: '/'});
+                this.$store.commit('getTopicsList');
+              }
             });
           }
         }

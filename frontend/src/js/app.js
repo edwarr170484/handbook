@@ -28,7 +28,13 @@ const store = new Vuex.Store({
     },
     mutations:{
         getTopicsList(){
-            axios.get('/topics/list').then((response) => {this.state.topics = response.data;});
+            axios.get('/topics/list').then((response) => {
+                if(response.data.error){
+                    alert(response.data.error);
+                }else{
+                    this.state.topics = response.data.topics;
+                }
+            });
         }
     }
 });

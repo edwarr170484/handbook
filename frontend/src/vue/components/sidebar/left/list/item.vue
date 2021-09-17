@@ -60,9 +60,6 @@
             }
         },
         methods:{
-            onClick (text) {
-                alert(`You clicked ${text}!`);
-            },
             editTopic: function(){
                 this.isLoading = true;
                 axios({
@@ -77,6 +74,9 @@
                     this.isLoading = false;
                     this.isEdit = false;
                     
+                    if(response.data.error){
+                        alert(response.data.error);
+                    }
                 });
             },
             deleteTopic: function(){
@@ -87,17 +87,21 @@
                         data: {'id': this.item.id},
                         responseType: 'json'
                     }).then((response) => {
-                        if(this.item.parent_id){
-                            const index = this.$parent.item.children.indexOf(this.item);
-
-                            if (index > -1) {
-                                this.$parent.item.children.splice(index, 1);
-                            }
+                        if(response.data.error){
+                            alert(response.data.error);
                         }else{
-                            const index = this.$parent.$parent.items.indexOf(this.item);
-                        
-                            if (index > -1) {
-                                this.$parent.$parent.items.splice(index, 1);
+                            if(this.item.parent_id){
+                                const index = this.$parent.item.children.indexOf(this.item);
+
+                                if (index > -1) {
+                                    this.$parent.item.children.splice(index, 1);
+                                }
+                            }else{
+                                const index = this.$parent.$parent.items.indexOf(this.item);
+                            
+                                if (index > -1) {
+                                    this.$parent.$parent.items.splice(index, 1);
+                                }
                             }
                         }
                     });
@@ -117,12 +121,16 @@
                 }).then((response) => {
                     this.isCreate = false;
                     this.isLoading = false;
-
-                    if(this.item.children === undefined){
-                        Vue.set(this.item, 'children', []);
-                    }
                     
-                    this.item.children.push(response.data);
+                    if(response.data.error){
+                        alert(response.data.error);
+                    }else{
+                        if(this.item.children === undefined){
+                            Vue.set(this.item, 'children', []);
+                        }
+                        
+                        this.item.children.push(response.data.topic);
+                    }
                 });
             },
             goToPost: function(post){

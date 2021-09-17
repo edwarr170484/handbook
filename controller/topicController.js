@@ -13,9 +13,12 @@ class TopicController{
             params.parent_id = parent_id;
         }
 
-        const topic = await Topic.create(params);
-    
-        return res.json(topic);
+        try{
+            const topic = await Topic.create(params);
+            return res.json({topic: topic, error: null});
+        }catch (err){
+            return res.json({error: 'Topic create error: ' + err.message});
+        }
     }
 
     async edit(req, res){
@@ -26,45 +29,57 @@ class TopicController{
             title: title
         };
 
-        const topic = await Topic.update(params, {
-            where: {
-                id: params.id
-            }
-        });
+        try{
+            await Topic.update(params, {
+                where: {
+                    id: params.id
+                }
+            });
 
-        return res.json(params);
+            return res.json({error: null});
+        }catch (err){
+            return res.json({error: 'Topic edit error: ' + err.message});
+        }
     }
 
     async delete(req, res){
         const {id} = req.body;
 
-        await Topic.destroy({
-            where: {
-                id: id
-            }
-        });
+        try{
+            await Topic.destroy({
+                where: {
+                    id: id
+                }
+            });
 
-        return res.json({'error' : 0});
+            return res.json({error: null});
+        }catch (err){
+            return res.json({error: 'TOpic delete error: ' + err.message});
+        }
     }
 
     async getTopicsList(req, res){
-        const topics = await Topic.findAll({
-            where:{
-                parent_id: null
-            },
-            include:[{
-                model: Topic,
-                as: 'children'
-            },{
-                model: Post,
-                as: 'posts'
-            }],
-            order:[
-                ['id', 'ASC']
-            ]
-        });
-
-        return res.json(topics);
+        try{
+            let topics = await Topic.findAll({
+                where:{
+                    parent_id: null
+                },
+                include:[{
+                    model: Topic,
+                    as: 'children'
+                },{
+                    model: Post,
+                    as: 'posts'
+                }],
+                order:[
+                    ['id', 'ASC']
+                ]
+            });
+    
+            return res.json({topics: topics, error: null});
+        }catch(err){
+            return res.json({error: 'Get topic list error: ' + err.message});
+        }
     }
 }
 

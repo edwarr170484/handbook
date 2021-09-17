@@ -27,13 +27,17 @@ export default {
                         url: '/editor/post/block/delete',
                         data: {'id': this.block.id},
                         responseType: 'json'
+                    }).then((response) => {
+                        if(response.data.error){
+                            alert(response.data.error);
+                        }else{
+                            let index = this.$parent.post.blocks.indexOf(this.block);
+
+                            if(index > -1){
+                                this.$parent.post.blocks.splice(index, 1);
+                            }
+                        }
                     });
-                }
-
-                let index = this.$parent.post.blocks.indexOf(this.block);
-
-                if(index > -1){
-                    this.$parent.post.blocks.splice(index, 1);
                 }
             }
         }
