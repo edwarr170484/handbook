@@ -39,7 +39,7 @@ const store = new Vuex.Store({
     }
 });
 
-const app = new Vue({
+new Vue({
     render: h => h(App),
     router: router,
     store: store

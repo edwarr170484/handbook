@@ -1,5 +1,6 @@
 const HtmlWebpackPlugin  = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const ESLintPlugin = require('eslint-webpack-plugin');
 const {CleanWebpackPlugin} = require('clean-webpack-plugin');
 const { VueLoaderPlugin } = require('vue-loader')
 
@@ -52,6 +53,7 @@ module.exports={
             filename:'[contenthash].css',
         }),
         new CleanWebpackPlugin({ cleanStaleWebpackAssets: false }),
-        new VueLoaderPlugin()
+        new VueLoaderPlugin(),
+        new ESLintPlugin()
     ]
 }

@@ -26,7 +26,6 @@
 <script>
     import axios from 'axios';
     import headerMenu from '../vue/components/header.vue'
-    import mainContent from '../vue/components/main.vue'
     import docsNav from '../vue/components/sidebar/left/list/list.vue'
     
     export default {
@@ -40,8 +39,7 @@
         },
         components:{
             'header-menu' : headerMenu,
-            'docs-nav' : docsNav,
-            'main-content' : mainContent
+            'docs-nav' : docsNav
         },
         created(){
             this.$store.commit('getTopicsList');
