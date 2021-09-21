@@ -1,11 +1,10 @@
 const express = require('express');
 const router = express.Router();
 
-const frontRoutes = require('./front/front');
 const editorTopicRoutes = require('./editor/topic');
 const editorPostRoutes = require('./editor/post');
 
-router.use('/', frontRoutes);
+router.get('/', (req, res) => {res.sendFile(__dirname + '/public');});
 router.use('/editor/topic', editorTopicRoutes);
 router.use('/editor/post', editorPostRoutes);
 

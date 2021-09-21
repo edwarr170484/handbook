@@ -65,12 +65,20 @@
       methods: {
         getPostData: function(){
           this.post = null;
-          axios.get('/post/' + this.$route.params.postId).then((response) => {
+          let queryPost = `query Post{
+              post(post_id: "${this.$route.params.postId}") {
+                id, 
+                title, 
+                blocks {id, type, blockText, post_id}
+            }
+          }`;
+
+          axios.get('/graphql', {params:{query: queryPost}}).then((response) => {
             if(response.data.error){
               alert(response.data.error);
             }else{
-              this.post = response.data.post;
-              if(this.post.blocks.length > 0){
+              this.post = response.data.data.post;
+              if(this.post && this.post.blocks.length > 0){
                   this.navigations = this.post.blocks.filter(function(block){
                       return ['header1','header2','header3','header4','header5','header6'].includes(block.type);
                   });

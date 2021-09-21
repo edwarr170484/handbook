@@ -227,25 +227,6 @@ class PostController{
             return res.json({error: 'Remove post block error: ' + err.message});
         }
     }
-
-    async getPost(req, res){
-        try{
-            const {postId} = req.params;
-        
-            let post = await Post.findOne({
-                where: {
-                    id: postId
-                },
-                include:[
-                    {model: PostBlock, as: 'blocks'}
-                ]
-            });
-
-            return res.json({post: post, error: null});
-        }catch(err){
-            return res.json({error: 'Get post error:' + err.message});
-        }
-    }
 }
 
 module.exports = new PostController();

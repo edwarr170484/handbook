@@ -16,6 +16,7 @@ Vue.use(Vuex);
 
 const router = new VueRouter({
     routes:[
+        {name: 'index', path: '/', component: mainContent},
         {name: 'post', path: '/post/:postId', component: mainContent},
         {name: 'postEdit', path: '/editor/post/edit/:postId', component: postEdit},
         {name: 'postCreate', path: '/editor/post/create/:topicId', component: postCreate}
@@ -28,11 +29,26 @@ const store = new Vuex.Store({
     },
     mutations:{
         getTopicsList(){
-            axios.get('/topics/list').then((response) => {
+            let queryTopicsTree = `query TopicsTree{
+                topics {
+                    id,
+                    title,
+                    sortorder,
+                    parent_id,
+                    children {
+                        id,
+                        title,
+                        posts{id,title}
+                    },
+                    posts{id,title}
+                }
+            }`;
+
+            axios.get('/graphql', {params: {query: queryTopicsTree}}).then((response) => {
                 if(response.data.error){
                     alert(response.data.error);
                 }else{
-                    this.state.topics = response.data.topics;
+                    this.state.topics = response.data.data.topics;
                 }
             });
         }

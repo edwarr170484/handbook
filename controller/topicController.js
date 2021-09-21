@@ -1,4 +1,4 @@
-const {Topic, Post, PostBlock} = require('../db/models');
+const {Topic} = require('../db/models');
 
 class TopicController{
     async create(req, res){
@@ -55,30 +55,6 @@ class TopicController{
             return res.json({error: null});
         }catch (err){
             return res.json({error: 'TOpic delete error: ' + err.message});
-        }
-    }
-
-    async getTopicsList(req, res){
-        try{
-            let topics = await Topic.findAll({
-                where:{
-                    parent_id: null
-                },
-                include:[{
-                    model: Topic,
-                    as: 'children'
-                },{
-                    model: Post,
-                    as: 'posts'
-                }],
-                order:[
-                    ['id', 'ASC']
-                ]
-            });
-    
-            return res.json({topics: topics, error: null});
-        }catch(err){
-            return res.json({error: 'Get topic list error: ' + err.message});
         }
     }
 }
