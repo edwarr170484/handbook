@@ -11,6 +11,7 @@
 </script>
 
 <style>
+    #knowladge > .navbar{position:fixed;width:100%;z-index:3;}
     .navbar-brand a{
         color:#fff;
         text-decoration:none;

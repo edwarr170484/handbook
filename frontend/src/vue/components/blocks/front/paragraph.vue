@@ -1,5 +1,5 @@
 <template>
-    <p>{{ block.blockText }}</p>
+    <p v-html="block.blockText"></p>
 </template>
 
 <script>

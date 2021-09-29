@@ -4,19 +4,8 @@ const fs = require('fs');
 
 class PostController{
     async createPost(req, res){
-        try{
-            if(req.files){
-                if(Array.isArray(req.files['post.images'])){
-                    req.files['post.images'].forEach(function(image){
-                        image.mv(path.resolve(__dirname, '../public/upload/' + image.name));
-                    });
-                }else{
-                    req.files['post.images'].mv(path.resolve(__dirname, '../public/upload/' + req.files['post.images'].name));
-                }
-            }
-    
+        try{ 
             let blocks = [];
-    
             if(req.body['post.blocks']){
                 if(Array.isArray(req.body['post.blocks'])){
                     for(let i = 0;i < req.body['post.blocks'].length;i++){
@@ -58,17 +47,7 @@ class PostController{
     }
 
     async editPost(req, res){
-        try{
-            if(req.files){
-                if(Array.isArray(req.files['post.images'])){
-                    req.files['post.images'].forEach(function(image){
-                        image.mv(path.resolve(__dirname, '../public/upload/' + image.name));
-                    });
-                }else{
-                    req.files['post.images'].mv(path.resolve(__dirname, '../public/upload/' + req.files['post.images'].name));
-                }
-            }
-    
+        try{    
             await Post.update({
                 title: req.body['post.title'],
                 postText: req.body['post.postText']
@@ -77,7 +56,14 @@ class PostController{
                     id: req.body['post.id']
                 }
             });
-    
+
+            let currentBlockIds = [];
+            let postBlocks = await PostBlock.findAll({
+                where: {
+                    post_id: req.body['post.id']
+                }
+            });
+
             if(req.body['post.blocks']){
                 if(Array.isArray(req.body['post.blocks'])){
                     for(let i = 0; i < req.body['post.blocks'].length; i++){
@@ -90,22 +76,8 @@ class PostController{
     
                         if(req.body['block.id'][i] == 'isNew'){
                             await PostBlock.create(blockData);
-                        }else {
-                            let tmpBlock = await PostBlock.findOne({
-                                where: {
-                                    id: +req.body['block.id'][i]
-                                }
-                            });
-    
-                            if(tmpBlock && tmpBlock.type == 'imageBlock'){
-                                if(tmpBlock.blockText !== blockData.blockText){
-                                    fs.unlink(path.resolve(__dirname, '../public/upload/' + tmpBlock.blockText), (err) => {
-                                        if (err) throw err;
-                                        console.log('successfully deleted /public/upload/' + tmpBlock.blockText);
-                                    });
-                                }
-                            }
-    
+                        }else {    
+                            currentBlockIds.push(+req.body['block.id'][i]);
                             await PostBlock.update(blockData, {
                                 where:{
                                     id: +req.body['block.id'][i]
@@ -124,21 +96,7 @@ class PostController{
                     if(req.body['block.id'] == 'isNew'){
                         await PostBlock.create(blockData);
                     }else {
-                        let tmpBlock = await PostBlock.findOne({
-                            where: {
-                                id: +req.body['block.id']
-                            }
-                        });
-    
-                        if(tmpBlock && tmpBlock.type == 'imageBlock'){
-                            if(tmpBlock.blockText != blockData.blockText){
-                                fs.unlink(path.resolve(__dirname, '../public/upload/' + tmpBlock.blockText), (err) => {
-                                    if (err) throw err;
-                                    console.log('successfully deleted /public/upload/' + tmpBlock.blockText);
-                                });
-                            }
-                        }
-    
+                        currentBlockIds.push(+req.body['block.id']);
                         await PostBlock.update(blockData, {
                             where:{
                                 id: +req.body['block.id']
@@ -146,6 +104,25 @@ class PostController{
                         });
                     }
                 }
+            }
+
+            if(postBlocks.length > 0){
+                postBlocks.forEach(function(block){
+                    if(!currentBlockIds.includes(block.id)){
+                        if(block.type == 'imageBlock'){
+                            fs.unlink(path.resolve(__dirname, '../public/upload/' + block.blockText), (err) => {
+                                if (err) throw err;
+                                console.log('successfully deleted /public/upload/' + block.blockText);
+                            });
+                        }
+                        
+                        PostBlock.destroy({
+                            where: {
+                                id: block.id
+                            }
+                        });
+                    }
+                });
             }
     
             let post = await Post.findOne({
@@ -160,6 +137,25 @@ class PostController{
             return res.json({post: post, error: null});
         }catch(err){
             return res.json({error: 'Edit post error: ' + err.message});
+        }
+    }
+
+    async uploadImage(req, res){
+        if(req.files){
+            try{
+                req.files.image.mv(path.resolve(__dirname, '../public/upload/' + req.files.image.name));
+
+                return res.json({
+                    "success" : 1,
+                    "file": {
+                        "url": "/upload/" + req.files.image.name,
+                        "text": req.files.image.name
+                    }
+                })
+
+            }catch(err){
+                return res.json({error: 'Image upload error: ' + err.message});
+            }
         }
     }
 
@@ -196,35 +192,6 @@ class PostController{
             return res.json({error: null});
         }catch(err){
             return res.json({error: 'Remove post error: ' + err.message});
-        }
-    }
-
-    async removePostBlock(req, res){
-        try{
-            const {id} = req.body;
-
-            let block = await PostBlock.findOne({
-                where: {
-                    id: id
-                }
-            });
-
-            if(block.type == 'imageBlock'){
-                fs.unlink(path.resolve(__dirname, '../public/upload/' + block.blockText), (err) => {
-                    if (err) throw err;
-                    console.log('successfully deleted /public/upload/' + block.blockText);
-                });
-            }
-
-            await PostBlock.destroy({
-                where: {
-                    id: id
-                }
-            });
-
-            return res.json({error: null});
-        }catch(err){
-            return res.json({error: 'Remove post block error: ' + err.message});
         }
     }
 }

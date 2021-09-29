@@ -16,6 +16,7 @@ const postType = new GraphQLObjectType({
     fields: {
         id: {type: GraphQLID},
         title: {type: GraphQLString},
+        postText: {type: GraphQLString},
         topic_id: {type: GraphQLID},
         blocks: {
             type: new GraphQLList(postBlockType),

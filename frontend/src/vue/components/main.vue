@@ -1,7 +1,7 @@
 <template>
     <div class="col-10">
       <div class="row flex-xl-nowrap2">
-        <div class="bd-content col-xl-9 col-12 pb-md-3 pl-md-5">
+        <div class="bd-content col-xl-9 col-12 pb-md-3 pl-md-5" id="main-content">
           <main class="bd-main bd-components">
             <header class="bd-content d-flex justify-content-between align-items-center" v-if="post && post.title">
               <h1 id="bootstrap-icons" class="bv-no-focus-ring" tabindex="-1"><span class="bd-content-title">{{ post.title }}</span></h1> 
@@ -24,16 +24,17 @@
 <script>
   import axios from 'axios';
   import refsNav from './sidebar/right/list/list.vue';
-  import header1 from './blocks/front/header1.vue';
-  import header2 from './blocks/front/header2.vue';
-  import header3 from './blocks/front/header3.vue';
-  import header4 from './blocks/front/header4.vue';
-  import header5 from './blocks/front/header5.vue';
-  import header6 from './blocks/front/header6.vue';
+  import header_1 from './blocks/front/header_1.vue';
+  import header_2 from './blocks/front/header_2.vue';
+  import header_3 from './blocks/front/header_3.vue';
+  import header_4 from './blocks/front/header_4.vue';
+  import header_5 from './blocks/front/header_5.vue';
+  import header_6 from './blocks/front/header_6.vue';
   import paragraph from './blocks/front/paragraph.vue'; 
-  import image from './blocks/front/image.vue';
+  import imageBlock from './blocks/front/image.vue';
   import preformatted from './blocks/front/preformatted.vue';
   import code from './blocks/front/code.vue';
+  import list from './blocks/front/list.vue';
 
   export default {
       name: 'main-content',
@@ -45,16 +46,17 @@
       },
       components:{
         'refs-nav' : refsNav,
-        'header1': header1,
-        'header2': header2,
-        'header3': header3,
-        'header4': header4,
-        'header5': header5,
-        'header6': header6,
+        'header_1': header_1,
+        'header_2': header_2,
+        'header_3': header_3,
+        'header_4': header_4,
+        'header_5': header_5,
+        'header_6': header_6,
         'paragraph': paragraph,
-        'imageBlock': image,
+        'imageBlock': imageBlock,
         'preformatted': preformatted,
-        'codeBlock': code
+        'codeBlock': code,
+        'list': list
       },
       created() {
         this.getPostData();
@@ -68,7 +70,8 @@
           let queryPost = `query Post{
               post(post_id: "${this.$route.params.postId}") {
                 id, 
-                title, 
+                title,
+                postText, 
                 blocks {id, type, blockText, post_id}
             }
           }`;
@@ -80,7 +83,7 @@
               this.post = response.data.data.post;
               if(this.post && this.post.blocks.length > 0){
                   this.navigations = this.post.blocks.filter(function(block){
-                      return ['header1','header2','header3','header4','header5','header6'].includes(block.type);
+                      return ['header_1','header_2','header_3','header_4','header_5','header_6'].includes(block.type);
                   });
               }
             }
@@ -104,5 +107,6 @@
 
 <style lang="sass">
   .bd-lead{max-width: 100%;}
+  #main-content{padding-top:80px;}
 </style>
 

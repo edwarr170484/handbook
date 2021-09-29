@@ -12,7 +12,7 @@
                 </b-input-group-append>
             </b-input-group>
             <vue-context ref="menu">
-                <li @click="isCreate = true" v-if="!item.parent_id">Добавить подкатегорию</li>
+                <li @click="isCreate = true" v-if="!item.parent_id">Добавить подкатегорию - {{ item.parent_id }}</li>
                 <li @click="$router.push({name: 'postCreate', params: {topicId: item.id}})">Добавить статью</li>
                 <li @click="isEdit = true">Редактировать</li>
                 <li @click="deleteTopic">Удалить</li>

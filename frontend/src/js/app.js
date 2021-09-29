@@ -38,6 +38,7 @@ const store = new Vuex.Store({
                     children {
                         id,
                         title,
+                        parent_id,
                         posts{id,title}
                     },
                     posts{id,title}
